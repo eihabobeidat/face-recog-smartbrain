@@ -1,0 +1,9 @@
+.Tilt {
+	text-align: center;
+	background: rgb(2,0,36);
+	background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(114,44,228,1) 50%, rgba(0,212,255,1) 100%);
+}
+
+.logo {
+	padding-left: 5px;
+}
