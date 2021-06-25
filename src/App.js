@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import Navigation from './components/Navigation/Navigation.js';
+import Signin from './components/Signin/Signin.js';
+import Register from './components/Register/Register.js';
 import Logo from './components/Logo/Logo.js';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm.js';
 import Rank from './components/Rank/Rank.js';
@@ -31,7 +33,9 @@ class App extends Component {
     this.state = {
       input:'',
       url:'',
-      box:{}
+      box:{},
+      isSignedin:false,
+      isRegistered:true
     }
   }
 
@@ -65,7 +69,14 @@ class App extends Component {
     app.models.predict('f76196b43bbd45c99b4f3cd8e8b40a8a', this.state.input)
     .then(response => this.displayBox(this.calculateBox(response)))
     .catch(error => console.log(error))
-    
+  }
+
+  signingIn = (event) => {
+    this.state.isSignedin ? this.setState({isSignedin:false}) : this.setState({isSignedin:true});
+  }
+
+  registering = (event) => {
+    this.state.isRegistered ? this.setState({isRegistered:false}) : this.setState({isRegistered:true});
   }
 
   render() {
@@ -74,11 +85,19 @@ class App extends Component {
         <Particles className="particles"
           // params={particlesOptions}
         />
-        <Navigation />
-        <Logo />
-        <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
-        <FaceRecognition box={this.state.box} url={this.state.url}/>
+        {this.state.isSignedin ?
+          <div>
+            <Navigation signingIn={this.signingIn} />
+            <Logo />
+            <Rank />
+            <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
+            <FaceRecognition box={this.state.box} url={this.state.url}/>
+          </div>
+        :
+          <div>
+            {this.state.isRegistered ? <Signin signingIn={this.signingIn} registering={this.registering} /> : <Register registering={this.registering}/> }
+          </div>
+        }
       </div>
     );
   }
