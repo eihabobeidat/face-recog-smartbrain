@@ -1,3 +1,6 @@
+the front end part of smart brain project >>> using react html css & api's
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
