@@ -60,7 +60,7 @@ class App extends Component {
   }
 
   updateRank = () => {
-    fetch ('http://127.0.0.1:3000/image', {
+    fetch ('https://smartbrain-application9.herokuapp.com/image', {
       method : 'put',
       headers: {'Content-Type':'application/json'},
       body:JSON.stringify({

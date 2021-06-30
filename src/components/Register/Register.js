@@ -16,7 +16,7 @@ class Register extends React.Component {
 
 	submit = () => {
 		const {name, email , password} = this.state;
-		fetch ('http://127.0.0.1:3000/register', {
+		fetch ('https://smartbrain-application9.herokuapp.com/register', {
 			method : 'post',
 			headers: {'Content-Type':'application/json'},
 			body:JSON.stringify({
