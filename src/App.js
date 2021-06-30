@@ -26,17 +26,24 @@ const app = new Clarifai.App({
 //   }
 // }
 
-
+const initialState = {
+  input:'',
+  url:'',
+  box:{},
+  isSignedin:false,
+  isRegistered:true,
+  user:{
+    date: "",
+    email: "",
+    id: 0,
+    name: "",
+    rank: 0
+  }
+}
 class App extends Component {
   constructor () {
     super();
-    this.state = {
-      input:'',
-      url:'',
-      box:{},
-      isSignedin:false,
-      isRegistered:true
-    }
+    this.state = initialState;
   }
 
   calculateBox = (data) => {
@@ -52,9 +59,21 @@ class App extends Component {
     }
   }
 
+  updateRank = () => {
+    fetch ('http://127.0.0.1:3000/image', {
+      method : 'put',
+      headers: {'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:this.state.user.id
+        })
+    })
+    .then(response => response.json())
+    .then(newRank => this.setState(Object.assign( this.state.user, {rank:newRank})))
+    .catch(err => console.log("Rank updating Error", err))
+  }
+
   displayBox = (box) => {
     this.setState({box:box});
-    console.log(this.state.box);
   }
 
   onInputChange = (event) => {
@@ -64,19 +83,35 @@ class App extends Component {
   }
 
   onSubmit = (event) => {
-    console.log(event.type);
     this.setState({url:this.state.input})
     app.models.predict('f76196b43bbd45c99b4f3cd8e8b40a8a', this.state.input)
-    .then(response => this.displayBox(this.calculateBox(response)))
+    .then(response => {
+      this.displayBox(this.calculateBox(response));
+      this.updateRank();
+    })
     .catch(error => console.log(error))
   }
 
-  signingIn = (event) => {
-    this.state.isSignedin ? this.setState({isSignedin:false}) : this.setState({isSignedin:true});
+  signingIn = (signed) => {
+    this.setState({isSignedin:signed});
+  }
+
+  signOut = (click) =>{
+    this.setState(initialState);
   }
 
   registering = (event) => {
     this.state.isRegistered ? this.setState({isRegistered:false}) : this.setState({isRegistered:true});
+  }
+
+  userUpdate = (user)  => {
+    this.setState({user:{
+      date: user.date,
+      email: user.email,
+      id: user.id,
+      name: user.name.toUpperCase(),
+      rank: user.rank
+    }})
   }
 
   render() {
@@ -87,15 +122,15 @@ class App extends Component {
         />
         {this.state.isSignedin ?
           <div>
-            <Navigation signingIn={this.signingIn} />
+            <Navigation signingIn={this.signingIn} signOut={this.signOut} />
             <Logo />
-            <Rank />
+            <Rank userName={this.state.user.name} rank={this.state.user.rank} />
             <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
             <FaceRecognition box={this.state.box} url={this.state.url}/>
           </div>
         :
           <div>
-            {this.state.isRegistered ? <Signin signingIn={this.signingIn} registering={this.registering} /> : <Register registering={this.registering}/> }
+            {this.state.isRegistered ? <Signin signingIn={this.signingIn} registering={this.registering} userUpdate={this.userUpdate} /> : <Register registering={this.registering} /> }
           </div>
         }
       </div>
